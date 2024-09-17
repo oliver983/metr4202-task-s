@@ -15,3 +15,9 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 1. Clone the repository:
    ```bash
    git clone https://github.com/username/project-name.git
+
+
+
+
+ahahahahahah
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
