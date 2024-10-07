@@ -26,7 +26,9 @@ ahahahahahah
 ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
 ## Aruco marker detector:
-have ros2 open (similar to parc4)
-open a new terminal
-run command:
+1. have ros2 open (similar to parc4)
+
+2. open a new terminal
+
+3. run command:
 ros2 run aruco_detector aruco_detector
