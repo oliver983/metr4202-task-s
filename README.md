@@ -21,12 +21,12 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 ## Build Process
 1. Colcon build in workspace directory using:
    ```
-   cd ~/ros2_ws (goto your workspace)
+   cd ~/<your workspace> (goto your workspace)
    colcon build
    ```
 3. Source the workspace:
    ```
-   source ~/ros2_ws/install/setup.bash
+   source ~/<your workspace>/install/setup.bash
    ```
 ## Problems:
 1. Frontier detection only works for light gray and dark grey. This makes the robot unable to detect narrow paths. The fix needs to prioritise light grey frontier, but when it has run out of light grey within itself (certain radius) then it will try to visit the coloured frontiers.
