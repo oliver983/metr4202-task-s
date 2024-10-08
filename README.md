@@ -24,6 +24,12 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 
 ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
+## How to run:
+
+## Installation: 
+1. Clone directory into /src
+2. 
+
 ## Aruco marker detector:
 1. have gazebo open with a map loaded (similar to prac4)
 
