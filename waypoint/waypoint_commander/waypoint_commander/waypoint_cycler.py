@@ -106,7 +106,7 @@ class FrontierDetector(Node):
         for y in range(height):
             for x in range(width):
                 idx = x + y * width
-                if data[idx] >= 0 and data[idx] < 70:  #The costmap value. Might need to change for frontiers at narrow places.
+                if data[idx] >= 0 and data[idx] < 40:  #The costmap value. Might need to change for frontiers at narrow places.
                     if self.is_frontier(x, y, data, width, height):
                         frontier_grid[y][x] = ' +'
                         frontiers.append((x, y))  # Store the frontier coordinates
