@@ -44,13 +44,13 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
    export TURTLEBOT3_MODEL=waffle_pi
    ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
    ```
-3. Run nav2 and slam
+3. Open a seperate window and run nav2 and slam
    ```
    export TURTLEBOT3_MODEL=waffle_pi
    ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
    ```
-4. Run waypoint commander code
+4. Open a seperate window and run waypoint commander code
    ```
    ros2 run waypoint_commander waypoint_cycler
    ```
