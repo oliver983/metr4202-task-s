@@ -38,11 +38,21 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
 
 ## How to run:
 
-## Installation: 
-1. Clone directory into /src
-2. 
+1. Run installation types
+2. In a terminal, launch the waffle_pi in the turtlebot3_world:
+   ```
+   export TURTLEBOT3_MODEL=waffle_pi
+   ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+   ```
+3. Run nav2 and slam
+   ```
+   export TURTLEBOT3_MODEL=waffle_pi
+   ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
-## Aruco marker detector:
+   ```
+
+
+## Running aruco marker detector (optional):
 1. have gazebo open with a map loaded (similar to prac4)
 
 2. colcon build
