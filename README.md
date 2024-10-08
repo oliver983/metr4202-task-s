@@ -50,6 +50,10 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
    ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
    ```
+4. Run waypoint commander code
+   ```
+   ros2 run waypoint_commander waypoint_cycler
+   ```
 
 
 ## Running aruco marker detector (optional):
