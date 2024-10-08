@@ -22,7 +22,6 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 2. Sometimes there are single grey frontier glitch, which causes the robot to get stuck. (Revision 5)
 
 
-ahahahahahah
 ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
 ## Aruco marker detector:
