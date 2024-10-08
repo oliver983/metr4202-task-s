@@ -25,7 +25,7 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
 ## Aruco marker detector:
-1. have ros2 open (similar to parc4)
+1. have ros2 open (similar to prac4)
 
 2. open a new terminal
 
