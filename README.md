@@ -20,12 +20,12 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 
 ## Build Process
 1. Colcon build in workspace directory using:
-   ```
+   ```bash
    cd ~/<your workspace> (goto your workspace)
    colcon build
    ```
 3. Source the workspace:
-   ```
+   ```bash
    source ~/<your workspace>/install/setup.bash
    ```
 ## Problems:
@@ -40,18 +40,18 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
 
 1. Run installation types
 2. In a terminal, launch the waffle_pi in the turtlebot3_world:
-   ```
+   ```bash
    export TURTLEBOT3_MODEL=waffle_pi
    ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
    ```
 3. Open a seperate window and run nav2 and slam
-   ```
+   ```bash
    export TURTLEBOT3_MODEL=waffle_pi
    ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 
    ```
 4. Open a seperate window and run waypoint commander code
-   ```
+   ```bash
    ros2 run waypoint_commander waypoint_cycler
    ```
 
