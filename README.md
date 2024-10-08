@@ -21,8 +21,8 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 ## Build Process
 1. Colcon build in workspace directory using:
    cd ~/ros2_ws (goto your workspace)
-   <ncolcon build
-2. Source the workspace:
+   <br>colcon build
+3. Source the workspace:
    source ~/ros2_ws/install/setup.bash
 
 ## Problems:
