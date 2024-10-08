@@ -38,6 +38,8 @@ class FrontierDetector(Node):
 
         self.idle_first = False
 
+        self.visited_points = []
+
         # Prevent unused variable warning
         self.subscription
 
@@ -104,7 +106,7 @@ class FrontierDetector(Node):
         for y in range(height):
             for x in range(width):
                 idx = x + y * width
-                if data[idx] >= 0 and data[idx] < 90:  # Free space
+                if data[idx] >= 0 and data[idx] < 70:  #The costmap value. Might need to change for frontiers at narrow places.
                     if self.is_frontier(x, y, data, width, height):
                         frontier_grid[y][x] = ' +'
                         frontiers.append((x, y))  # Store the frontier coordinates
@@ -150,7 +152,7 @@ class FrontierDetector(Node):
             # Calculate the Euclidean distance between the robot and the frontier
             distance = math.sqrt((frontier_x - self.robot_x) ** 2 + (frontier_y - self.robot_y) ** 2)
 
-            if distance < min_distance:
+            if distance < min_distance and (frontier_x, frontier_y) not in self.visited_points:
                 min_distance = distance
                 closest_frontier = (frontier_x, frontier_y)
 
@@ -181,6 +183,11 @@ class FrontierDetector(Node):
         """
         Publish the closest frontier as a waypoint using a PoseStamped message.
         """
+
+        if frontier in self.visited_points:
+            self.get_logger().info(f"Point {frontier} already visited, skipping.")
+            return
+        
         if frontier:
             waypoint = PoseStamped()
             waypoint.header.frame_id = 'map'
@@ -195,6 +202,9 @@ class FrontierDetector(Node):
             # Log and publish the waypoint
             self.get_logger().info(f"Publishing waypoint to frontier at ({frontier[0]}, {frontier[1]})")
             self.publisher.publish(waypoint)
+
+            self.visited_points.append(frontier)
+
 
 
 def main(args=None):
