@@ -65,7 +65,7 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
 
 4. open a new terminal
 
-5. run command:
+5. run command within the workspace:
 ```bash
 ros2 run aruco_detector aruco_detector
 ```
