@@ -56,7 +56,7 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
    ```
 
 
-## Running aruco marker detector (optional):
+## Running aruco marker detector:
 1. have gazebo open with a map loaded (similar to prac4)
 
 2. colcon build
@@ -66,4 +66,6 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
 4. open a new terminal
 
 5. run command:
+```bash
 ros2 run aruco_detector aruco_detector
+```
