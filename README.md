@@ -49,21 +49,22 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 
 
 ## Running aruco marker detector:
-1. have gazebo open with a map loaded (similar to prac4)
+1. Have gazebo, ros2 and slam running.
 
-2. colcon build in the workspace
+2. Build in the workspace
    ```bash
    cd ~/<your workspace>
    colcon build
    ```
    
-3. source the setup.bash
+3. Source the setup.bash
    ```bash
    source install/setup.bash
    ```
-4. open a new terminal
+4. Open a new terminal and navigate to your workspace
 
-5. run command within the workspace:
+5. Run command within the workspace:
    ```bash
    ros2 run aruco_detector aruco_detector
    ```
+   A window of the camera view should appear, indicating that it is running. The detected marker id and location is printed in the terminal opened. 
