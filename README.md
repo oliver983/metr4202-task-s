@@ -28,15 +28,8 @@ targets within a map using RViz, Gazebo and TurtleBot3.
    ```bash
    source ~/<your workspace>/install/setup.bash
    ```
-## Problems:
-1. Frontier detection only works for light gray and dark grey. This makes the robot unable to detect narrow paths. The fix needs to prioritise light grey frontier, but when it has run out of light grey within itself (certain radius) then it will try to visit the coloured frontiers.
 
-2. Sometimes there are single grey frontier glitch, which causes the robot to get stuck. (Revision 5)
-
-
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
-
-## How to run:
+## How to run (in simulation):
 
 1. Run installation types
 2. In a terminal, launch the waffle_pi in the turtlebot3_world:
@@ -48,7 +41,6 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
    ```bash
    export TURTLEBOT3_MODEL=waffle_pi
    ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
-
    ```
 4. Open a seperate window and run waypoint commander code
    ```bash
