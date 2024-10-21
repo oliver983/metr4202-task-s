@@ -14,30 +14,33 @@ class FrontierDetector(Node):
         # Subscribe to global costmap to detect frontiers
         self.subscription = self.create_subscription(
             OccupancyGrid,
-            '/global_costmap/costmap',  # Adjust topic if necessary
+            '/global_costmap/costmap',
             self.costmap_callback,
             10)
         
         # Subscribe to the state of the robot
         self.subscription = self.create_subscription(BehaviorTreeLog, '/behavior_tree_log', self.bt_log_callback, 10)
 
+        # Subscribe to odometry
         self.odom_subscriber = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
 
 
         # Publish waypoint
         self.publisher = self.create_publisher(PoseStamped, 'goal_pose', 10)  # Publisher for the waypoint
        
-        # Placeholder for robot's current position (update with actual position if needed)
+        # Placeholder for robot's current position
         self.robot_x = 0.0
         self.robot_y = 0.0
 
+        # Variable to detect first callback for algorithm purposes
         self.callback_first = 1
 
-        # State of robot
+        # Status of robot
         self.is_idle = True
-
+        
         self.idle_first = False
 
+        # Initialise array of visited points to prioritise unexplored regions
         self.visited_points = []
 
         # Prevent unused variable warning
@@ -52,6 +55,11 @@ class FrontierDetector(Node):
         self.robot_y = msg.pose.pose.position.y
 
     def costmap_callback(self, msg):
+        """
+        Callback for the global costmap subscriber.
+        Updates the next waypoint based on the frontiers detected.
+        """
+        
         # Extract the costmap data
         width = msg.info.width
         height = msg.info.height
@@ -63,13 +71,7 @@ class FrontierDetector(Node):
         # Call function to find frontiers
         frontier_grid, frontiers = self.find_frontiers(data, width, height)
 
-        # Print the frontier grid
-        #self.print_frontier_grid(frontier_grid, width, height)
-
-        #First, go to the farthest point
-        #Then, go follow the closest frontier
-
-        # Find the closest frontier and publish it as a waypoint
+        #First, go to the farthest point and wait until it reaches the point (IDLE state)
         if frontiers and self.is_idle and self.callback_first:
             self.is_idle = False
             print("Frontier detected")
@@ -77,14 +79,19 @@ class FrontierDetector(Node):
             self.publish_waypoint(farthest_frontier, origin_x, origin_y, resolution)
             self.current_waypoint = farthest_frontier
             self.callback_first = 0
-
+        
+        #Then, go follow the closest frontier without waiting for IDLE state
         elif frontiers and not self.callback_first and self.idle_first:
             closest_frontier = self.find_closest_frontier(frontiers, origin_x, origin_y, resolution)
             self.publish_waypoint(closest_frontier, origin_x, origin_y, resolution)
 
-        
 
     def bt_log_callback(self, msg):
+        """
+        Callback for the behavior tree log (robot's status) subscriber.
+        Updates the state of the robot (RUNNING, IDLE, FAILED).
+        """
+        
         for event in msg.event_log:
             if event.node_name == 'NavigateRecovery' and event.current_status == 'IDLE':
                 self.is_idle = True
@@ -92,13 +99,11 @@ class FrontierDetector(Node):
             # Checks for failure on reaching a waypoint
             if event.node_name == 'NavigateRecovery':
                 self.get_logger().info(f"Status: {event.current_status}")
-        
- 
 
     def find_frontiers(self, data, width, height):
         """
         Find frontiers in the costmap.
-        Frontiers are areas where free space (value 0) is adjacent to unknown space (value -1).
+        Frontiers are traversable space (value 0 to 70) adjacent to unknown space (value -1).
         """
         frontier_grid = [['  ' for _ in range(width)] for _ in range(height)]  # Create an empty grid
         frontiers = []  # List to store coordinates of frontier cells
@@ -106,7 +111,7 @@ class FrontierDetector(Node):
         for y in range(height):
             for x in range(width):
                 idx = x + y * width
-                if data[idx] >= 0 and data[idx] < 60:  #The costmap value. Might need to change for frontiers at narrow places.
+                if data[idx] >= 0 and data[idx] < 70:  # Costmap value threshold
                     if self.is_frontier(x, y, data, width, height):
                         frontier_grid[y][x] = ' +'
                         frontiers.append((x, y))  # Store the frontier coordinates
@@ -204,8 +209,6 @@ class FrontierDetector(Node):
             self.publisher.publish(waypoint)
 
             self.visited_points.append(frontier)
-
-
 
 def main(args=None):
     rclpy.init(args=args)
