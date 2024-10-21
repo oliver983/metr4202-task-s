@@ -21,7 +21,7 @@ targets within a map using RViz, Gazebo and TurtleBot3.
 ## Build Process
 1. Colcon build in workspace directory using:
    ```bash
-   cd ~/<your workspace> (goto your workspace)
+   cd ~/<your workspace>
    colcon build
    ```
 3. Source the workspace:
@@ -59,10 +59,16 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
 ## Running aruco marker detector:
 1. have gazebo open with a map loaded (similar to prac4)
 
-2. colcon build
-
+2. colcon build in the workspace
+   ```bash
+   cd ~/<your workspace>
+   colcon build
+   ```
+   
 3. source the setup.bash
-
+   ```bash
+   source install/setup.bash
+   ```
 4. open a new terminal
 
 5. run command within the workspace:
