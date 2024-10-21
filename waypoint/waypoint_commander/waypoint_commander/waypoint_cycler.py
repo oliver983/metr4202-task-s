@@ -1,11 +1,10 @@
 import rclpy
 from rclpy.node import Node
-from nav_msgs.msg import OccupancyGrid, Path
+from nav_msgs.msg import OccupancyGrid
 from nav2_msgs.msg import BehaviorTreeLog
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Twist
 from nav_msgs.msg import Odometry
 import math
-import time
 
 class FrontierDetector(Node):
     def __init__(self):
@@ -19,13 +18,15 @@ class FrontierDetector(Node):
             10)
         
         # Subscribe to the state of the robot
-        self.subscription = self.create_subscription(BehaviorTreeLog, '/behavior_tree_log', self.bt_log_callback, 10)
+        self.bt_subscription = self.create_subscription(
+            BehaviorTreeLog, '/behavior_tree_log', self.bt_log_callback, 10)
 
         self.odom_subscriber = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
 
-        # Publish waypoint
+        # Publish waypoint and velocity commands
         self.publisher = self.create_publisher(PoseStamped, 'goal_pose', 10)  # Publisher for the waypoint
-       
+        self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)  # Publisher for velocity commands
+
         # Placeholder for robot's current position and orientation
         self.robot_x = 0.0
         self.robot_y = 0.0
@@ -35,9 +36,7 @@ class FrontierDetector(Node):
         self.is_idle = True
         self.visited_points = []
         self.radius = 150  # Starting radius
-
-        # Prevent unused variable warning
-        self.subscription
+        self.current_target = None  # Track the current target frontier
 
     def odom_callback(self, msg):
         """
@@ -50,6 +49,13 @@ class FrontierDetector(Node):
         # Extract yaw (heading) from the quaternion orientation
         orientation = msg.pose.pose.orientation
         _, _, self.robot_yaw = self.euler_from_quaternion(orientation)
+
+        # Check distance to the current target (if any)
+        if self.current_target:
+            distance_to_target = self.calculate_distance(self.current_target[0], self.current_target[1])
+            if distance_to_target <= 1:  # Reached the target (within 1 meter)
+                self.get_logger().info("Reached target, starting to spin in place.")
+                self.start_spinning()  # Start spinning when target is reached
 
     def euler_from_quaternion(self, orientation):
         """
@@ -70,7 +76,6 @@ class FrontierDetector(Node):
     def costmap_callback(self, msg):
         """
         Callback for the costmap data, triggers frontier detection and goal sending.
-        Waits until robot is idle before sending a new goal.
         """
         # Extract the costmap data
         width = msg.info.width
@@ -93,6 +98,7 @@ class FrontierDetector(Node):
             if farthest_frontier:
                 self.publish_waypoint(farthest_frontier, origin_x, origin_y, resolution)
                 self.is_idle = False  # Set to false after sending a new waypoint
+                self.current_target = farthest_frontier  # Set the current target
             else:
                 self.get_logger().info("No frontier found within the radius, increasing.")
                 self.radius += 50
@@ -199,22 +205,48 @@ class FrontierDetector(Node):
             return
         
         if frontier:
-            print(self.radius)
             waypoint = PoseStamped()
             waypoint.header.frame_id = 'map'
             waypoint.header.stamp = self.get_clock().now().to_msg()
-            
+
+            # Convert frontier coordinates back to PoseStamped format
             waypoint.pose.position.x = frontier[0]
             waypoint.pose.position.y = frontier[1]
             waypoint.pose.position.z = 0.0
-            waypoint.pose.orientation.w = 1.0  # Neutral orientation
+            waypoint.pose.orientation.w = 1.0  # No rotation
 
-            # Log and publish the waypoint
-            self.get_logger().info(f"Publishing waypoint to frontier at ({frontier[0]}, {frontier[1]})")
-            self.publisher.publish(waypoint)
+            self.publisher.publish(waypoint)  # Publish the waypoint
+            self.get_logger().info(f"Published waypoint at: {waypoint.pose.position.x}, {waypoint.pose.position.y}")
 
-            self.visited_points.append(frontier)
+    def start_spinning(self):
+        """
+        Command the robot to spin in place.
+        This function publishes velocity commands to make the robot rotate.
+        """
+        spin_duration = 3.0  # Duration to spin (seconds)
+        spin_speed = 0.5  # Angular velocity (rad/s)
 
+        # Create a Twist message for spinning
+        spin_msg = Twist()
+        spin_msg.angular.z = spin_speed  # Spin counterclockwise
+
+        # Publish the spinning command for a certain duration
+        end_time = self.get_clock().now() + rclpy.duration.Duration(seconds=spin_duration)
+        while self.get_clock().now() < end_time:
+            self.cmd_vel_publisher.publish(spin_msg)
+            self.get_logger().info("Spinning in place...")
+            time.sleep(0.1)  # Sleep briefly to control the frequency of the command
+
+        # Stop spinning
+        spin_msg.angular.z = 0.0
+        self.cmd_vel_publisher.publish(spin_msg)
+        self.get_logger().info("Stopped spinning.")
+
+        # Mark the target as visited
+        if self.current_target:
+            self.visited_points.append(self.current_target)
+            self.current_target = None  # Clear the current target
+            self.is_idle = True  # Set to idle to find the next frontier
 
 def main(args=None):
     rclpy.init(args=args)
